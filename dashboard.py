@@ -54,6 +54,7 @@ st.markdown(page_bg, unsafe_allow_html=True)
 # --- SHARED ON ALL PAGES ---
 st.logo("Assets/Logo.png")
 
+
 # --- PAGE SETUP ---
 Homepage = st.Page(
     "Page/Homepage.py",
@@ -71,12 +72,11 @@ Klassification_page = st.Page(
     title="Klasifikasi Gambar",
     icon=":material/eco:",
 )
-
 # --- NAVIGATION SETUP [WITH SECTIONS]---
 pg = st.navigation(
     {
         "Info": [Homepage],
-         "Projects": [Object_detection_page, Klassification_page]
+         "Projects" : [Object_detection_page, Klassification_page]
     }
 )
 
