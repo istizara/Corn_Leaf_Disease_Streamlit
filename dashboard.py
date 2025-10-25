@@ -1,50 +1,117 @@
 import streamlit as st
-from ultralytics import YOLO
-import tensorflow as tf
-from tensorflow.keras.preprocessing import image
-import numpy as np
-from PIL import Image
-import cv2
 
 # ==========================
-# Load Models
+# Menu dan Navigasi
 # ==========================
-@st.cache_resource
-def load_models():
-    yolo_model = YOLO("model/Isti_Laporan 4.pt")  # Model deteksi objek
-    classifier = tf.keras.models.load_model("model/Isti_Laporan_2.h5")  # Model klasifikasi
-    return yolo_model, classifier
 
-yolo_model, classifier = load_models()
+# --- CUSTOM BACKGROUND COLOR (apply to all pages) ---
+page_bg = """
+<style>
+    /* Ubah warna background seluruh halaman */
+    [data-testid="stAppViewContainer"] {
+        background-color: #cfe1b9; 
+    }
+    /* Card atau container tetap putih */
+        [data-testid="stHeader"], .st-emotion-cache-1r6slb0 {
+            background: none;
+    }
 
-# ==========================
-# UI
-# ==========================
-st.title("🌿 Analisis Klasifikasi Penyakit Daun Jagung ")
+    /* Sidebar juga pakai warna yang sama */
+    [data-testid="stSidebar"] {
+        background-color: #98a77c; 
+    }
 
-menu = st.sidebar.selectbox("Pilih Mode:", ["Deteksi Objek (YOLO)", "Klasifikasi Gambar"])
+    /* Saat fitur dipilih (aktif) */
+    [data-testid="stSidebarNav"] a[aria-current="page"] {
+        background-color: #ffffff !important; /* putih */
+        color: #1b3d1b !important;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+    
+    /* Hover effect biar interaktif */
+    [data-testid="stSidebarNav"] a:hover {
+        background-color: #dbe8c0 !important;
+        color: #1b3d1b !important;
+    }
 
-uploaded_file = st.file_uploader("Unggah Gambar", type=["jpg", "jpeg", "png"])
+    /* Ubah warna tombol biar serasi */
+    .stButton>button {
+        background-color: #6da544;
+        color: white;
+        border-radius: 10px;
+        border: none;
+    }
 
-if uploaded_file is not None:
-    img = Image.open(uploaded_file)
-    st.image(img, caption="Gambar yang Diupload", use_container_width=True)
+    .stButton>button:hover {
+        background-color: #588a34;
+        color: #fff;
+    }
+</style>
+"""
+st.markdown(page_bg, unsafe_allow_html=True)
 
-    if menu == "Deteksi Objek (YOLO)":
-        # Deteksi objek
-        results = yolo_model(img)
-        result_img = results[0].plot()  # hasil deteksi (gambar dengan box)
-        st.image(result_img, caption="Hasil Deteksi", use_container_width=True)
+# --- SHARED ON ALL PAGES ---
+st.logo("Logo.png")
 
-    elif menu == "Klasifikasi Gambar":
-        # Preprocessing
-        img_resized = img.resize((224, 224))  # sesuaikan ukuran dengan model kamu
-        img_array = image.img_to_array(img_resized)
-        img_array = np.expand_dims(img_array, axis=0)
-        img_array = img_array / 255.0
+# --- PAGE SETUP ---
+Homepage = st.Page(
+    "Homepage.py",
+    title="Homepage",
+    icon=":material/account_circle:",
+    default=True,
+)
+Object_detection_page = st.Page(
+    "Deteksi_Gambar.py",
+    title="Deteksi Gambar",
+    icon=":material/search:",
+)
+Klassification_page = st.Page(
+    "Klasifikasi_Gambar.py",
+    title="Klasifikasi Gambar",
+    icon=":material/eco:",
+)
 
-        # Prediksi
-        prediction = classifier.predict(img_array)
-        class_index = np.argmax(prediction)
-        st.write("### Hasil Prediksi:", class_index)
-        st.write("Probabilitas:", np.max(prediction))
+# --- NAVIGATION SETUP [WITH SECTIONS]---
+pg = st.navigation(
+    {
+        "Info": [Homepage],
+         "Projects": [Object_detection_page, Klassification_page]
+    }
+)
+
+
+# --- SHARED ON ALL PAGES ---
+st.logo("Logo.png")
+
+# --- PAGE SETUP ---
+Homepage = st.Page(
+    "Homepage.py",
+    title="Homepage",
+    icon=":material/account_circle:",
+    default=True,
+)
+Object_detection_page = st.Page(
+    "Deteksi_Gambar.py",
+    title="Deteksi Gambar",
+    icon=":material/search:",
+)
+Klassification_page = st.Page(
+    "Klasifikasi_Gambar.py",
+    title="Klasifikasi Gambar",
+    icon=":material/eco:",
+)
+# --- NAVIGATION SETUP [WITH SECTIONS]---
+pg = st.navigation(
+    {
+        "Info": [Homepage],
+         "Projects" : [Object_detection_page, Klassification_page]
+    }
+)
+
+# --- SHARED ON ALL PAGES ---
+st.sidebar.markdown("Made with ❤️ by [Stiwww]")
+
+
+# --- RUN NAVIGATION ---
+pg.run()
